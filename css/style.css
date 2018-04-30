@@ -1,0 +1,31 @@
+body {
+  background: #ede9e980; }
+  body .row {
+    margin-right: 15px;
+    margin-left: 15px; }
+  body header {
+    background-image: url(../img/redwine.jpg);
+    width: 100% !important;
+    padding: 20px 0; }
+    body header h3, body header p {
+      text-align: center;
+      color: white; }
+  body .container.filter {
+    padding: 20px 0; }
+    body .container.filter h5 {
+      border: 1px solid gainsboro;
+      padding: 15px;
+      display: table; }
+    body .container.filter li {
+      list-style: none; }
+  body .all .info,
+  body .all .price {
+    background: #991f1f;
+    color: white;
+    padding: 15px; }
+  body .all .price {
+    font-size: 30px; }
+  body .all img {
+    margin-bottom: 30px;
+    border: 1px solid gainsboro;
+    border-top: none; }
