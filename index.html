@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>Fête du vins 2017</title>
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css">
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+      <link rel="stylesheet" type="text/css" href="css/style.css">
+    </head>
+    
+    <body>
+        <header class="container">
+            <div class="row">
+                <div class="col-sm-12">
+                  <h3>Fête du vin 2017</h3>
+                  <p id="count"></p>
+                </div>
+            </div>
+        </header>
+        
+        <div class="container filter">
+            <div class="row">
+                <ul id="color" class="col-xs-12 col-sm-4 list-wines">
+                     <!-- Liste des vins sous forme de checkboxes-->
+                </ul>
+                <ul id="price_range" class="col-xs-12 col-sm-4 list-wines">
+                     <!-- Liste des vins sous forme de checkboxes-->
+                </ul>
+                <ul id="region" class="col-xs-12 col-sm-4 list-wines">
+                     <!-- Liste des vins sous forme de checkboxes -->
+                </ul>
+            </div>
+        </div>
+        
+        <div class="container">
+            <div id="wines" class="row">
+                <!-- Liste des vins -->
+            </div>
+        </div>
+        <script>
+            function readTextFile(file, callback) {
+                var rawFile = new XMLHttpRequest();
+                rawFile.overrideMimeType("application/json");
+                rawFile.open("GET", file, true);
+                rawFile.onreadystatechange = function() {
+                    if (rawFile.readyState === 4 && rawFile.status == "200") {
+                        callback(rawFile.responseText);
+                    }
+                }
+                rawFile.send(null);
+            }
+            //usage:
+            readTextFile("fdv2017.json", function(text){
+                let wines = JSON.parse(text);
+                //console.log(wines);
+ 
+                let app = new function() {
+                    // Récupération des données
+                    this.wines = wines;
+                    
+                    // Affiche les vins (tous par défaut)
+                    this.FetchAll = function(data) {
+                      // Selection de l'élément
+                      let elWines = document.getElementById('wines');
+                      let htmlWines = '';
+                      for (let i in data) {
+                          
+                        htmlWines += '<div class="all col-xs-12 col-sm-4">';
+                        htmlWines += '<div class="row">';
+                        htmlWines += '<div class="col-xs-12 col-sm-8 info">';  
+                        htmlWines += '<p>' + data[i].domain + '</p>';
+                        htmlWines += '<p>' + data[i].appellation + '</p>';
+                        htmlWines += '<p> <i class="fa fa-calendar" aria-hidden="true"></i> ' + data[i].millesime + '</p>';
+                        htmlWines += '</div>';
+
+                        htmlWines += '<div class="col-xs-12 col-sm-4 price"';
+                        htmlWines += '<h2>' + data[i].price_vp_bundle + ' €</h2>';
+                        htmlWines += '</div>';
+                        htmlWines += '</div>';
+                          
+                        htmlWines += '<div class="row">';
+                        htmlWines += '<img src="img/vin.png" width="100%" height="auto">';
+                        htmlWines += '</div>';
+                          
+                        htmlWines += '</div>';
+                      }
+                
+                      //Affichage de l'ensemble des lignes en HTML
+                      elWines.innerHTML = htmlWines;
+                      // Affiche le nombre de vins
+                      this.Count(data);
+                    };
+              
+                    //Retourne le nombre de vins
+                    this.Count = (data) => document.getElementById('count').innerHTML = data.length + ' vin(s)';
+              
+                    //Retourne la liste des checkboxes
+                    this.DisplayFilters = function() {
+                      //Selection de l'élément
+                      let elColor = document.getElementById('color');
+                      let color   = [];
+                      let elregion = document.getElementById('region');
+                      let region   = [];
+                      let elprice_range = document.getElementById('price_range');
+                      let price_range   = [];
+                
+                      //Chaque ligne (vin)
+                      for (let i in wines) {
+
+                        //Chaque "color" "region" "price range" pour chaque vin
+                          color.push(wines[i].color);
+                          region.push(wines[i].region);
+                          price_range.push(wines[i].price_range);
+
+                      }
+			  
+
+                      //////////////////color///////////////////
+                      let uniqueColor = color.filter( (value, index, self) => self.indexOf(value) === index );
+                      let htmlColor = '';
+
+                      htmlColor += '<h5>Robe du vin</h5>';
+
+                      for (let i in uniqueColor) {
+                        htmlColor += '<li><input type="checkbox" id="' + uniqueColor[i] + '" name="color[]" value="' + uniqueColor[i] + '"> <label for="' + uniqueColor[i] + '">' + uniqueColor[i] + '</label></li>';
+                      }
+                      elColor.innerHTML = htmlColor;
+			  
+			  
+			  
+                      ///////////////////region//////////////////////
+                      let uniqueRegion = region.filter( (value, index, self) => self.indexOf(value) === index );
+                      let htmlRegion = '';
+
+                      htmlRegion += '<h5>Région</h5>';
+
+                      for (let i in uniqueRegion) {
+                        htmlRegion += '<li><input type="checkbox" id="' + uniqueRegion[i] + '" name="region[]" value="' + uniqueRegion[i] + '"> <label for="' + uniqueRegion[i] + '">' + uniqueRegion[i] + '</label></li>';
+                      }
+                      elregion.innerHTML = htmlRegion;
+
+
+			  
+                      ///////////////////price_range//////////////////////
+                      let uniquePrice_range = price_range.filter( (value, index, self) => self.indexOf(value) === index );
+                      let htmlPrice_range = '';
+
+                      htmlPrice_range += '<h5>Catégorie</h5>';
+
+                      for (let i in uniquePrice_range) {
+                        htmlPrice_range += '<li><input type="checkbox" id="' + uniquePrice_range[i] + '" name="price_range[]" value="' + uniquePrice_range[i] + '"> <label for="' + uniquePrice_range[i] + '">' + uniquePrice_range[i] + '</label></li>';
+                      }
+                      elprice_range.innerHTML = htmlPrice_range;
+                    };
+              
+                    //Retourne les vins filtrés
+                    this.FilterByColor = function() {
+                      //Afiche les checkboxes
+                      this.DisplayFilters();
+
+                      let checkboxes = document.querySelectorAll('input');
+                      let arrColor = [];
+                      let arrRegion = [];
+                      let arrPrice_range = [];
+                      let self = this;
+                      for (let checkbox of checkboxes) {
+                        checkbox.addEventListener('click', function() {
+                            filteredWines=self.wines;
+
+                            ////////////////filtre color /////////////////////
+                            if(checkbox.name=='color[]'){
+                            if (checkbox.checked) {
+                            //Ajout dans le tableau de la valeur cochée
+                            arrColor.push(checkbox.value);
+                          } else {
+                            //Suppression dans le tableau
+                            let removeItem = arrColor.filter( (e) => e !== checkbox.value );
+                            arrColor = removeItem;
+                          }}
+
+                            ////////////////filtre price_range /////////////////////
+                            if(checkbox.name=='price_range[]'){
+                            if (checkbox.checked) {
+                            //Ajout dans le tableau de la valeur cochée
+                            arrPrice_range.push(checkbox.value);
+                          } else {
+                            //Suppression dans le tableau
+                            let removeItem = arrPrice_range.filter( (e) => e !== checkbox.value );
+                            arrPrice_range = removeItem;
+                          }}
+
+                            ////////////////filtre region /////////////////////
+                            if(checkbox.name=='region[]'){
+                            if (checkbox.checked) {
+                            //Ajout dans le tableau de la valeur cochée
+                            arrRegion.push(checkbox.value);
+                          } else {
+                            //Suppression dans le tableau
+                            let removeItem = arrRegion.filter( (e) => e !== checkbox.value );
+                            arrRegion = removeItem;
+                          }}
+
+                          if (arrColor.length > 0 || arrRegion.length > 0 || arrPrice_range.length > 0) {
+
+
+                          if (arrColor.length > 0) {
+                              filteredWines = filteredWines.filter(function(e) {
+                                return arrColor.indexOf(e.color) !== -1;                          
+                              });
+                            self.FetchAll(filteredWines);
+                          } 
+
+                          if (arrRegion.length > 0) {
+                              filteredWines = filteredWines.filter(function(e) {
+                                return arrRegion.indexOf(e.region) !== -1;                          
+                              });
+                            self.FetchAll(filteredWines);
+                          } 
+
+                          if (arrPrice_range.length > 0) {
+                              filteredWines = filteredWines.filter(function(e) {
+                                return arrPrice_range.indexOf(e.price_range) !== -1;                          
+                              });
+                            self.FetchAll(filteredWines);
+                          } }else {
+                            //Reset (aucune case cochée)
+                            app.FetchAll(wines);
+                          }
+                        });
+                      }
+                    };
+                  }
+              //Affichage de tous les vins
+              app.FetchAll(wines);
+          //Filtrage
+          app.FilterByColor();});
+        </script>
+    </body>
+</html>
